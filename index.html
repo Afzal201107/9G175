@@ -64,6 +64,16 @@ body{display:grid;place-items:center;overflow:hidden;background:radial-gradient(
 @keyframes float{to{translate:0 -8px;filter:drop-shadow(0 0 30px rgba(255,120,150,.9))}}
 .again{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:7;border:1px solid rgba(255,255,255,.4);background:rgba(0,0,0,.35);color:#fff;border-radius:20px;padding:6px 14px;font:14px system-ui,sans-serif;cursor:pointer;opacity:0;transition:opacity 1s}
 .again.show{opacity:1}
+
+/* ===== стартовая кнопка ===== */
+body:not(.started) *,body:not(.started) *::before,body:not(.started) *::after{animation-play-state:paused!important}
+.start{position:fixed;inset:0;z-index:20;display:grid;place-items:center;transition:opacity 1s ease,visibility 1s}
+.start.hide{opacity:0;visibility:hidden;pointer-events:none}
+.start button{display:flex;align-items:center;gap:12px;padding:16px 38px;border-radius:40px;border:1px solid rgba(255,255,255,.5);background:linear-gradient(100deg,#c42a4a,#ff7a96);color:#fff;font:600 20px system-ui,sans-serif;letter-spacing:.04em;cursor:pointer;box-shadow:0 0 40px rgba(255,90,130,.55),0 10px 30px rgba(0,0,0,.4);animation:startPulse 2.4s ease-in-out infinite alternate;transition:transform .2s}
+.start button:hover{transform:scale(1.06)}
+.start button:active{transform:scale(.97)}
+.start button i{font-style:normal;font-size:18px}
+@keyframes startPulse{from{box-shadow:0 0 24px rgba(255,90,130,.4),0 10px 30px rgba(0,0,0,.4)}to{box-shadow:0 0 60px rgba(255,120,150,.9),0 10px 30px rgba(0,0,0,.4)}}
 </style></head>
 <body>
 <main class="scene" id="scene"><div class="glow"></div>
@@ -83,17 +93,19 @@ body{display:grid;place-items:center;overflow:hidden;background:radial-gradient(
 </div></div></div></div></div></div></div></div></main>
 <div class="stage"><div class="wrap" id="wrap"></div></div>
 <div class="title" id="title"><span>My Best Class</span></div>
+<div class="start" id="start"><button id="startBtn" type="button"><i>▶</i> Запустить</button></div>
 <button class="again" id="again" onclick="location.reload()">↻</button>
 <script>
 const IMGS=["photo1.jpg", "photo2.jpg", "photo3.jpg", "photo4.jpg", "photo5.jpg", "photo6.jpg", "photo7.jpg", "photo8.jpg", "photo9.jpg", "photo10.jpg", "photo11.jpg"];
 const wrap=document.getElementById('wrap');
+const startP=new Promise(r=>{window.__start=r;});
 const EMERGE=15400, SPEED=80;
-Promise.all(IMGS.map(s=>new Promise(res=>{
+Promise.all([Promise.all(IMGS.map(s=>new Promise(res=>{
   const i=new Image();
   i.onload=()=>res(i);
   i.onerror=()=>{console.warn('Не найден файл:',s);res(null);};
   i.alt='';i.src=s;
-}))).then(list=>{
+}))),startP]).then(([list])=>{
 const slides=list.filter(Boolean);
 slides.forEach(i=>wrap.appendChild(i));
 if(!slides.length){console.error('Ни одна картинка не загрузилась. Проверьте пути в IMGS.');return;}
@@ -122,28 +134,14 @@ setTimeout(()=>{
 },EMERGE);
 });
 </script>
-<audio id="myAudio" src="cinnamon-girl.mp3" loop prefetch></audio>
-
-    <script>
-      function playAudio() {
-        var audio = document.getElementById("myAudio");
-        audio.play().then(() => {
-          removeListeners();
-        }).catch(error => {
-          console.log("Блокировка браузера...", error);
-        });
-      }
-
-      function removeListeners() {
-        window.removeEventListener('click', playAudio);
-        window.removeEventListener('touchstart', playAudio);
-        window.removeEventListener('touchend', playAudio);
-        window.removeEventListener('scroll', playAudio);
-      }
-
-      window.addEventListener('click', playAudio);
-      window.addEventListener('touchstart', playAudio);
-      window.addEventListener('touchend', playAudio);
-      window.addEventListener('scroll', playAudio);
-  </script>
+<audio id="myAudio" src="cinnamon-girl.mp3" loop preload="auto"></audio>
+<script>
+document.getElementById('startBtn').addEventListener('click',()=>{
+  const audio=document.getElementById('myAudio');
+  audio.play().catch(e=>console.log('Не удалось запустить звук:',e));
+  document.body.classList.add('started');
+  document.getElementById('start').classList.add('hide');
+  window.__start();
+},{once:true});
+</script>
 </body></html>
