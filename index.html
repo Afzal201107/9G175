@@ -122,60 +122,9 @@ setTimeout(()=>{
 },EMERGE);
 });
 </script>
-
-
-
-
-<audio id="bg-music" src="cinnamon-girl.mp3" loop></audio>
-
-<script>
-  // Музыка запустится автоматически, как только пользователь кликнет в любом месте сайта
-  document.addEventListener('click', function() {
-    var audio = document.getElementById('bg-music');
-    audio.play().catch(function(error) {
-      console.log("Автовоспроизведение заблокировано браузером до клика:", error);
-    });
-  }, { once: true }); // { once: true } значит, что код сработает только при самом первом клике
-</script>
-
-<!-- Сам аудиоэлемент (скрытый, без кнопок управления) -->
 <audio id="myAudio" src="cinnamon-girl.mp3" loop prefetch></audio>
 
-<script>
-  function playAudio() {
-    var audio = document.getElementById("myAudio");
-    
-    // Пытаемся запустить воспроизведение
-    audio.play().then(() => {
-      console.log("Музыка успешно запустилась!");
-      // Если запустилось, удаляем все обработчики, чтобы они не срабатывали повторно
-      removeListeners();
-    }).catch(error => {
-      console.log("Браузер всё еще блокирует трек, ждем клика...", error);
-    });
-  }
-
-  // Функция для удаления событий после успешного старта
-  function removeListeners() {
-    window.removeEventListener('click', playAudio);
-    window.removeEventListener('touchstart', playAudio);
-    window.removeEventListener('touchend', playAudio);
-    window.removeEventListener('scroll', playAudio);
-  }
-
-  // Вешаем проверку на любые действия пользователя на странице (клик, скролл, касание)
-  window.addEventListener('click', playAudio);
-  window.addEventListener('touchstart', playAudio);
-  window.addEventListener('touchend', playAudio);
-  window.addEventListener('scroll', playAudio);
-</script>
-
-    <!-- Здесь заканчивается ваш старый контент сайта (картинки, текст и т.д.) -->
-
-    <!-- ВСТАВЛЯЙТЕ СЮДА -->
-<audio id="myAudio" src="cinnamon-girl.mp3" loop prefetch></audio>
-
-  <script>
+    <script>
       function playAudio() {
         var audio = document.getElementById("myAudio");
         audio.play().then(() => {
